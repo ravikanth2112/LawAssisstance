@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Immigration Law Dashboard
 
 A comprehensive React.js dashboard for immigration law practice management.
@@ -129,3 +130,6 @@ The dashboard is designed to be easily customizable:
 ## License
 
 This project is licensed under the MIT License.
+=======
+# LawAssisstance
+>>>>>>> d5f7e98fb9b48170fe7fba97c93317b819290df2
