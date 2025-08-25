@@ -1,0 +1,62 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Install Dependencies",
+			"type": "shell",
+			"command": "npm install",
+			"group": "build"
+		},
+		{
+			"label": "Check Node Installation and Install Dependencies",
+			"type": "shell",
+			"command": "node --version && npm --version && npm install",
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "Check Node and Install Dependencies",
+			"type": "shell",
+			"command": "node --version; npm --version; npm install",
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "Fix PowerShell Policy and Install Dependencies",
+			"type": "shell",
+			"command": "Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser -Force; npm --version; npm install",
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "Install React Dependencies",
+			"type": "shell",
+			"command": "npm install --verbose",
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "Start React Development Server",
+			"type": "shell",
+			"command": "npm start",
+			"isBackground": true,
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "Check React Scripts Installation",
+			"type": "shell",
+			"command": "npm list react-scripts",
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "Start React Server with npx",
+			"type": "shell",
+			"command": "npx react-scripts start",
+			"isBackground": true,
+			"problemMatcher": [],
+			"group": "build"
+		}
+	]
+}
