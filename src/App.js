@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
 import Sidebar from './components/Sidebar';
 import SignIn from './pages/SignIn';
 import Dashboard from './pages/Dashboard';
@@ -24,50 +25,52 @@ const DashboardLayout = ({ children }) => {
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        {/* Public Routes */}
-        <Route path="/" element={<SignIn />} />
-        <Route path="/signin" element={<SignIn />} />
-        
-        {/* Protected Dashboard Routes */}
-        <Route path="/dashboard" element={
-          <DashboardLayout>
-            <Dashboard />
-          </DashboardLayout>
-        } />
-        <Route path="/clients" element={
-          <DashboardLayout>
-            <Clients />
-          </DashboardLayout>
-        } />
-        <Route path="/documents" element={
-          <DashboardLayout>
-            <Documents />
-          </DashboardLayout>
-        } />
-        <Route path="/deadlines" element={
-          <DashboardLayout>
-            <Deadlines />
-          </DashboardLayout>
-        } />
-        <Route path="/billing" element={
-          <DashboardLayout>
-            <Billing />
-          </DashboardLayout>
-        } />
-        <Route path="/branding" element={
-          <DashboardLayout>
-            <Branding />
-          </DashboardLayout>
-        } />
-        <Route path="/analytics" element={
-          <DashboardLayout>
-            <Analytics />
-          </DashboardLayout>
-        } />
-      </Routes>
-    </Router>
+    <AuthProvider>
+      <Router>
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/" element={<SignIn />} />
+          <Route path="/signin" element={<SignIn />} />
+          
+          {/* Protected Dashboard Routes */}
+          <Route path="/dashboard" element={
+            <DashboardLayout>
+              <Dashboard />
+            </DashboardLayout>
+          } />
+          <Route path="/clients" element={
+            <DashboardLayout>
+              <Clients />
+            </DashboardLayout>
+          } />
+          <Route path="/documents" element={
+            <DashboardLayout>
+              <Documents />
+            </DashboardLayout>
+          } />
+          <Route path="/deadlines" element={
+            <DashboardLayout>
+              <Deadlines />
+            </DashboardLayout>
+          } />
+          <Route path="/billing" element={
+            <DashboardLayout>
+              <Billing />
+            </DashboardLayout>
+          } />
+          <Route path="/branding" element={
+            <DashboardLayout>
+              <Branding />
+            </DashboardLayout>
+          } />
+          <Route path="/analytics" element={
+            <DashboardLayout>
+              <Analytics />
+            </DashboardLayout>
+          } />
+        </Routes>
+      </Router>
+    </AuthProvider>
   );
 }
 

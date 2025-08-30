@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { dashboardAPI, casesAPI } from '../services/api';
 
 const StatCard = ({ title, value, change, icon, onClick }) => (
   <div className="col-md-3 mb-4">
@@ -76,27 +78,68 @@ const Dashboard = () => {
   ]);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [stats, setStats] = useState([]);
+  const [recentActivity, setRecentActivity] = useState([]);
+  const [upcomingDeadlines, setUpcomingDeadlines] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const { user } = useAuth();
 
-  const stats = [
-    { title: 'Active Cases', value: '247', change: 12, icon: 'bi-briefcase' },
-    { title: 'This Month Revenue', value: '$87,320', change: 8, icon: 'bi-currency-dollar' },
-    { title: 'Pending Documents', value: '34', change: -5, icon: 'bi-file-earmark' },
-    { title: 'Upcoming Deadlines', value: '12', change: 15, icon: 'bi-calendar' }
-  ];
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      setLoading(true);
+      try {
+        // Fetch dashboard statistics
+        const statsResponse = await dashboardAPI.getStatistics();
+        const statsData = statsResponse.data;
+        
+        setStats([
+          { title: 'Active Cases', value: statsData.active_cases?.toString() || '0', change: 12, icon: 'bi-briefcase' },
+          { title: 'This Month Revenue', value: `$${statsData.total_revenue?.toLocaleString() || '0'}`, change: 8, icon: 'bi-currency-dollar' },
+          { title: 'Pending Documents', value: statsData.pending_documents?.toString() || '0', change: -5, icon: 'bi-file-earmark' },
+          { title: 'Upcoming Deadlines', value: statsData.upcoming_deadlines?.toString() || '0', change: 15, icon: 'bi-calendar' }
+        ]);
 
-  const recentActivity = [
-    { action: 'New I-485 application filed', client: 'Maria Rodriguez', time: '2 hours ago' },
-    { action: 'Document uploaded', client: 'John Chen', time: '4 hours ago' },
-    { action: 'Case status updated', client: 'Ahmed Hassan', time: '6 hours ago' },
-    { action: 'Payment received', client: 'Lisa Thompson', time: '1 day ago' }
-  ];
+        // Fetch recent activity
+        const activityResponse = await dashboardAPI.getRecentActivity();
+        setRecentActivity(activityResponse.data || []);
 
-  const upcomingDeadlines = [
-    { title: 'I-140 Response Due', date: 'Dec 15, 2024', priority: 'High' },
-    { title: 'H-1B Extension Filing', date: 'Dec 18, 2024', priority: 'High' },
-    { title: 'Client Meeting - Kumar Family', date: 'Dec 20, 2024', priority: 'Medium' },
-    { title: 'Document Review', date: 'Dec 22, 2024', priority: 'Low' }
-  ];
+        // Fetch upcoming deadlines  
+        const deadlinesResponse = await dashboardAPI.getUpcomingDeadlines();
+        setUpcomingDeadlines(deadlinesResponse.data || []);
+
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+        setError('Failed to load dashboard data');
+        
+        // Fallback to default data
+        setStats([
+          { title: 'Active Cases', value: '247', change: 12, icon: 'bi-briefcase' },
+          { title: 'This Month Revenue', value: '$87,320', change: 8, icon: 'bi-currency-dollar' },
+          { title: 'Pending Documents', value: '34', change: -5, icon: 'bi-file-earmark' },
+          { title: 'Upcoming Deadlines', value: '12', change: 15, icon: 'bi-calendar' }
+        ]);
+        
+        setRecentActivity([
+          { action: 'New I-485 application filed', client: 'Maria Rodriguez', time: '2 hours ago' },
+          { action: 'Document uploaded', client: 'John Chen', time: '4 hours ago' },
+          { action: 'Case status updated', client: 'Ahmed Hassan', time: '6 hours ago' },
+          { action: 'Payment received', client: 'Lisa Thompson', time: '1 day ago' }
+        ]);
+        
+        setUpcomingDeadlines([
+          { title: 'I-140 Response Due', date: 'Dec 15, 2024', priority: 'High' },
+          { title: 'H-1B Extension Filing', date: 'Dec 18, 2024', priority: 'High' },
+          { title: 'Client Meeting - Kumar Family', date: 'Dec 20, 2024', priority: 'Medium' },
+          { title: 'Document Review', date: 'Dec 22, 2024', priority: 'Low' }
+        ]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
 
   const handleStatClick = (statTitle) => {
     alert(`Viewing details for: ${statTitle}`);
@@ -122,13 +165,52 @@ const Dashboard = () => {
     alert(`Editing: ${title}`);
   };
 
+  const handleRefresh = async () => {
+    setLoading(true);
+    try {
+      // Fetch dashboard statistics
+      const statsResponse = await dashboardAPI.getStatistics();
+      const statsData = statsResponse.data;
+      
+      setStats([
+        { title: 'Active Cases', value: statsData.active_cases?.toString() || '0', change: 12, icon: 'bi-briefcase' },
+        { title: 'This Month Revenue', value: `$${statsData.total_revenue?.toLocaleString() || '0'}`, change: 8, icon: 'bi-currency-dollar' },
+        { title: 'Pending Documents', value: statsData.pending_documents?.toString() || '0', change: -5, icon: 'bi-file-earmark' },
+        { title: 'Upcoming Deadlines', value: statsData.upcoming_deadlines?.toString() || '0', change: 15, icon: 'bi-calendar' }
+      ]);
+
+      // Fetch recent activity
+      const activityResponse = await dashboardAPI.getRecentActivity();
+      setRecentActivity(activityResponse.data || []);
+
+      // Fetch upcoming deadlines  
+      const deadlinesResponse = await dashboardAPI.getUpcomingDeadlines();
+      setUpcomingDeadlines(deadlinesResponse.data || []);
+
+    } catch (error) {
+      console.error('Error refreshing dashboard data:', error);
+      setError('Failed to refresh dashboard data');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="p-4">
       {/* Header */}
       <div className="d-flex justify-content-between align-items-center mb-4">
         <div>
-          <h1 className="h2 mb-1">Firm Dashboard</h1>
+          <h1 className="h2 mb-1">
+            Welcome back, {user?.first_name || 'User'}! 
+            {loading && <span className="spinner-border spinner-border-sm ms-2" role="status"></span>}
+          </h1>
           <p className="text-muted mb-0">Overview of your immigration practice</p>
+          {error && (
+            <div className="alert alert-warning py-1 px-2 mt-2 small" role="alert">
+              <i className="bi bi-exclamation-triangle me-1"></i>
+              {error}
+            </div>
+          )}
         </div>
         <div className="d-flex gap-2 position-relative">
           <button 
@@ -203,9 +285,9 @@ const Dashboard = () => {
             <div className="card-header bg-white border-0 py-3">
               <div className="d-flex justify-content-between align-items-center">
                 <h5 className="card-title mb-0">Recent Activity</h5>
-                <button className="btn btn-outline-primary btn-sm">
+                <button className="btn btn-outline-primary btn-sm" onClick={handleRefresh} disabled={loading}>
                   <i className="bi bi-arrow-clockwise me-1"></i>
-                  Refresh
+                  {loading ? 'Refreshing...' : 'Refresh'}
                 </button>
               </div>
             </div>
