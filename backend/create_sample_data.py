@@ -21,9 +21,27 @@ import random
 def create_sample_data():
     """Create sample data for development"""
     
+    # Test database connection first
+    try:
+        print("🧪 Testing database connection...")
+        with engine.connect() as conn:
+            conn.execute("SELECT 1").fetchone()
+        print("✅ Database connection successful!")
+    except Exception as e:
+        print(f"❌ Database connection failed: {e}")
+        print("💡 Please run 'python setup_sqlserver.py' first to set up the database.")
+        return
+    
     db = SessionLocal()
     
     try:
+        # Check if data already exists
+        existing_users = db.query(User).count()
+        if existing_users > 0:
+            print(f"ℹ️ Found {existing_users} existing users. Skipping data creation.")
+            print("💡 To recreate data, please clear the database first.")
+            return
+        
         # Create sample users
         print("Creating sample users...")
         

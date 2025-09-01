@@ -8,10 +8,23 @@ from sqlalchemy.orm import sessionmaker
 from app.core.config import settings
 
 # Create database engine
-engine = create_engine(
-    settings.DATABASE_URL,
-    connect_args={"check_same_thread": False} if "sqlite" in settings.DATABASE_URL else {}
-)
+database_url = settings.DATABASE_URL if settings.DATABASE_URL else settings.database_url
+
+# SQL Server specific engine configuration
+if "mssql" in database_url:
+    engine = create_engine(
+        database_url,
+        # SQL Server specific options
+        pool_pre_ping=True,
+        pool_recycle=300,
+        echo=settings.DEBUG  # Log SQL queries in debug mode
+    )
+else:
+    # Fallback for other databases (like SQLite for development)
+    engine = create_engine(
+        database_url,
+        connect_args={"check_same_thread": False} if "sqlite" in database_url else {}
+    )
 
 # Create session factory
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

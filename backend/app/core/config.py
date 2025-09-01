@@ -17,17 +17,24 @@ class Settings(BaseSettings):
     HOST: str = Field(default="127.0.0.1", env="HOST")
     PORT: int = Field(default=8000, env="PORT")
     
-    # Database
-    DATABASE_URL: str = Field(
-        default="sqlite:///./immigration_law.db",
-        env="DATABASE_URL"
-    )
+    # Database - SQL Server Express Configuration
+    SQL_SERVER: str = Field(default="localhost\\SQLEXPRESS", env="SQL_SERVER")
+    SQL_DATABASE: str = Field(default="ImmigrationLawDB", env="SQL_DATABASE")
+    SQL_USERNAME: str = Field(default="", env="SQL_USERNAME") 
+    SQL_PASSWORD: str = Field(default="", env="SQL_PASSWORD")
     
-    # For SQL Server (uncomment when ready)
-    # SQL_SERVER: str = Field(default="localhost", env="SQL_SERVER")
-    # SQL_DATABASE: str = Field(default="ImmigrationLawDB", env="SQL_DATABASE")
-    # SQL_USERNAME: str = Field(default="", env="SQL_USERNAME")
-    # SQL_PASSWORD: str = Field(default="", env="SQL_PASSWORD")
+    # Database URL - Constructed for SQL Server Express
+    @property
+    def database_url(self) -> str:
+        if self.SQL_USERNAME and self.SQL_PASSWORD:
+            # SQL Server Authentication
+            return f"mssql+pyodbc://{self.SQL_USERNAME}:{self.SQL_PASSWORD}@{self.SQL_SERVER}/{self.SQL_DATABASE}?driver=ODBC+Driver+17+for+SQL+Server"
+        else:
+            # Windows Authentication (Trusted Connection)
+            return f"mssql+pyodbc://@{self.SQL_SERVER}/{self.SQL_DATABASE}?driver=ODBC+Driver+17+for+SQL+Server&trusted_connection=yes"
+    
+    # Fallback DATABASE_URL for manual override
+    DATABASE_URL: str = Field(default="", env="DATABASE_URL")
     
     # Security
     SECRET_KEY: str = Field(

@@ -2,26 +2,56 @@
 
 ## 🚀 Quick Start
 
-### 1. Installation
+### 1. Prerequisites
+- Python 3.8+
+- SQL Server Express (recommended) or SQLite for development
+- ODBC Driver 17 for SQL Server
+
+### 2. Installation
 ```bash
 cd backend
 pip install -r requirements.txt
 ```
 
-### 2. Start Server
+### 3. Database Setup (SQL Server Express)
 ```bash
-python run_server.py
+# Configure database (see SQL_SERVER_SETUP.md for details)
+python setup_sqlserver.py
 ```
 
-### 3. Create Sample Data
+### 4. Create Sample Data
 ```bash
 python create_sample_data.py
 ```
 
-### 4. Access API
+### 5. Start Server
+```bash
+python run_server.py
+```
+
+### 6. Access API
 - **API Server**: http://127.0.0.1:8000
 - **API Documentation**: http://127.0.0.1:8000/docs
 - **ReDoc Documentation**: http://127.0.0.1:8000/redoc
+
+## 🗄️ Database Configuration
+
+This API is configured to use **SQL Server Express** by default. 
+
+### Quick SQL Server Setup
+1. Install SQL Server Express
+2. Install ODBC Driver 17 for SQL Server  
+3. Run `python setup_sqlserver.py`
+4. See `SQL_SERVER_SETUP.md` for detailed instructions
+
+### Environment Configuration
+```env
+# .env file
+SQL_SERVER=localhost\SQLEXPRESS
+SQL_DATABASE=ImmigrationLawDB
+SQL_USERNAME=
+SQL_PASSWORD=
+```
 
 ## 📋 Test Accounts
 
