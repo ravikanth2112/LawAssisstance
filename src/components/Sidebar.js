@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
 import { 
   Home, 
   Users, 
@@ -17,17 +16,10 @@ import {
 const Sidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
 
-  const handleSignOut = async () => {
-    try {
-      await logout();
-      navigate('/signin');
-    } catch (error) {
-      console.error('Logout error:', error);
-      // Force navigation even if logout fails
-      navigate('/signin');
-    }
+  const handleSignOut = () => {
+    // Add any logout logic here (clear tokens, etc.)
+    navigate('/signin');
   };
 
   const menuItems = [
@@ -121,15 +113,13 @@ const Sidebar = () => {
               color: 'white',
               marginBottom: '2px'
             }}>
-              {user?.first_name && user?.last_name 
-                ? `${user.first_name} ${user.last_name}` 
-                : user?.email || 'User'}
+              Lawyer
             </div>
             <div style={{
               fontSize: '12px',
               color: '#94a3b8'
             }}>
-              {user?.role?.charAt(0).toUpperCase() + user?.role?.slice(1) || 'User'}
+              Senior Partner
             </div>
           </div>
         </div>

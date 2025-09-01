@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { authAPI } from '../services/api';
 
 const SignIn = () => {
   const [activePortal, setActivePortal] = useState(null); // Start with no portal selected
@@ -11,76 +9,39 @@ const SignIn = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
   const navigate = useNavigate();
-  const { login } = useAuth();
 
-  const handleSignIn = async (e) => {
+  const handleSignIn = (e) => {
     e.preventDefault();
-    setLoading(true);
-    setError('');
-
-    try {
-      const credentials = { email, password };
-      const response = await authAPI.login(credentials);
-      
-      // Store authentication data
-      await login(response.data.access_token, response.data.user);
-      
-      // Navigate based on user role and portal
-      if (response.data.user.role === 'lawyer' || response.data.user.role === 'admin') {
-        navigate('/dashboard');
-      } else {
-        // For client portal
-        alert('Welcome to Client Portal! Client dashboard coming soon.');
-        // navigate('/client-dashboard'); // Uncomment when client dashboard is ready
-      }
-    } catch (error) {
-      console.error('Login error:', error);
-      setError(error.response?.data?.detail || 'Login failed. Please check your credentials.');
-    } finally {
-      setLoading(false);
+    if (activePortal === 'lawyer') {
+      // Navigate to main dashboard for lawyers
+      navigate('/dashboard');
+    } else {
+      // For client portal, navigate to a client dashboard (you can create this later)
+      alert('Welcome to Client Portal! Client dashboard coming soon.');
+      // navigate('/client-dashboard'); // Uncomment when client dashboard is ready
     }
   };
 
-  const handleSignUp = async (e) => {
+  const handleSignUp = (e) => {
     e.preventDefault();
     
     if (password !== confirmPassword) {
-      setError('Passwords do not match!');
+      alert('Passwords do not match!');
       return;
     }
 
-    setLoading(true);
-    setError('');
-
-    try {
-      const userData = {
-        email,
-        password,
-        first_name: firstName,
-        last_name: lastName,
-        role: activePortal === 'lawyer' ? 'lawyer' : 'client'
-      };
-
-      const response = await authAPI.register(userData);
-      
-      alert(`Welcome ${firstName} ${lastName}! Your ${activePortal} account has been created. You can now sign in.`);
-      
-      // Reset form and switch to sign in
-      setIsSignUp(false);
-      setFirstName('');
-      setLastName('');
-      setConfirmPassword('');
-      setPassword('');
-      setEmail('');
-    } catch (error) {
-      console.error('Registration error:', error);
-      setError(error.response?.data?.detail || 'Registration failed. Please try again.');
-    } finally {
-      setLoading(false);
+    if (activePortal === 'lawyer') {
+      alert(`Welcome ${firstName} ${lastName}! Your lawyer account has been created. You can now sign in.`);
+    } else {
+      alert(`Welcome ${firstName} ${lastName}! Your client account has been created. You can now sign in.`);
     }
+    
+    // Reset form and switch to sign in
+    setIsSignUp(false);
+    setFirstName('');
+    setLastName('');
+    setConfirmPassword('');
   };
 
   const resetForm = () => {
@@ -89,7 +50,6 @@ const SignIn = () => {
     setConfirmPassword('');
     setFirstName('');
     setLastName('');
-    setError('');
   };
 
   const switchMode = (mode) => {
@@ -179,13 +139,6 @@ const SignIn = () => {
                         </div>
                         
                         <form onSubmit={isSignUp ? handleSignUp : handleSignIn} onClick={(e) => e.stopPropagation()}>
-                          {error && (
-                            <div className="alert alert-danger py-2 mb-3" role="alert">
-                              <i className="bi bi-exclamation-triangle me-2"></i>
-                              {error}
-                            </div>
-                          )}
-                          
                           {isSignUp && (
                             <>
                               <div className="row mb-3">
@@ -198,7 +151,6 @@ const SignIn = () => {
                                     value={firstName}
                                     onChange={(e) => setFirstName(e.target.value)}
                                     required
-                                    disabled={loading}
                                   />
                                 </div>
                                 <div className="col-6">
@@ -210,7 +162,6 @@ const SignIn = () => {
                                     value={lastName}
                                     onChange={(e) => setLastName(e.target.value)}
                                     required
-                                    disabled={loading}
                                   />
                                 </div>
                               </div>
@@ -226,7 +177,6 @@ const SignIn = () => {
                               value={email}
                               onChange={(e) => setEmail(e.target.value)}
                               required
-                              disabled={loading}
                             />
                           </div>
                           
@@ -239,7 +189,6 @@ const SignIn = () => {
                               value={password}
                               onChange={(e) => setPassword(e.target.value)}
                               required
-                              disabled={loading}
                             />
                           </div>
                           
@@ -253,7 +202,6 @@ const SignIn = () => {
                                 value={confirmPassword}
                                 onChange={(e) => setConfirmPassword(e.target.value)}
                                 required
-                                disabled={loading}
                               />
                             </div>
                           )}
@@ -261,19 +209,9 @@ const SignIn = () => {
                           <button 
                             type="submit"
                             className="btn btn-dark w-100 py-2 mb-3"
-                            disabled={loading}
                           >
-                            {loading ? (
-                              <>
-                                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                                {isSignUp ? 'Creating Account...' : 'Signing In...'}
-                              </>
-                            ) : (
-                              <>
-                                <i className="bi bi-briefcase me-2"></i>
-                                {isSignUp ? 'Create Lawyer Account' : 'Sign In as Lawyer'}
-                              </>
-                            )}
+                            <i className="bi bi-briefcase me-2"></i>
+                            {isSignUp ? 'Create Lawyer Account' : 'Sign In as Lawyer'}
                           </button>
                         </form>
                         
@@ -334,13 +272,6 @@ const SignIn = () => {
                         </div>
                         
                         <form onSubmit={isSignUp ? handleSignUp : handleSignIn} onClick={(e) => e.stopPropagation()}>
-                          {error && (
-                            <div className="alert alert-danger py-2 mb-3" role="alert">
-                              <i className="bi bi-exclamation-triangle me-2"></i>
-                              {error}
-                            </div>
-                          )}
-                          
                           {isSignUp && (
                             <>
                               <div className="row mb-3">
@@ -353,7 +284,6 @@ const SignIn = () => {
                                     value={firstName}
                                     onChange={(e) => setFirstName(e.target.value)}
                                     required
-                                    disabled={loading}
                                   />
                                 </div>
                                 <div className="col-6">
@@ -365,7 +295,6 @@ const SignIn = () => {
                                     value={lastName}
                                     onChange={(e) => setLastName(e.target.value)}
                                     required
-                                    disabled={loading}
                                   />
                                 </div>
                               </div>
@@ -381,7 +310,6 @@ const SignIn = () => {
                               value={email}
                               onChange={(e) => setEmail(e.target.value)}
                               required
-                              disabled={loading}
                             />
                           </div>
                           
@@ -394,7 +322,6 @@ const SignIn = () => {
                               value={password}
                               onChange={(e) => setPassword(e.target.value)}
                               required
-                              disabled={loading}
                             />
                           </div>
                           
@@ -408,7 +335,6 @@ const SignIn = () => {
                                 value={confirmPassword}
                                 onChange={(e) => setConfirmPassword(e.target.value)}
                                 required
-                                disabled={loading}
                               />
                             </div>
                           )}
@@ -416,19 +342,9 @@ const SignIn = () => {
                           <button 
                             type="submit"
                             className="btn btn-success w-100 py-2 mb-3"
-                            disabled={loading}
                           >
-                            {loading ? (
-                              <>
-                                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                                {isSignUp ? 'Creating Account...' : 'Signing In...'}
-                              </>
-                            ) : (
-                              <>
-                                <i className="bi bi-person-circle me-2"></i>
-                                {isSignUp ? 'Create Client Account' : 'Sign In as Client'}
-                              </>
-                            )}
+                            <i className="bi bi-person-circle me-2"></i>
+                            {isSignUp ? 'Create Client Account' : 'Sign In as Client'}
                           </button>
                         </form>
                         
