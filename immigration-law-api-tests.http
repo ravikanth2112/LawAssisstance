@@ -1,0 +1,37 @@
+﻿# Immigration Law Dashboard API - HTTP Test Collection
+# Base URL: http://127.0.0.1:8000
+# Total Endpoints: 63
+
+### Variables
+@baseUrl = http://127.0.0.1:8000
+@authToken = your_jwt_token_here
+
+### =====================================
+### AUTHENTICATION MODULE (4 endpoints)
+### =====================================
+
+### 1. Register User
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+    "email": "admin@lawfirm.com",
+    "password": "admin123",
+    "first_name": "Admin",
+    "last_name": "User",
+    "role": "admin"
+}
+
+### 2. Login User
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/x-www-form-urlencoded
+
+username=admin@lawfirm.com&password=admin123
+
+### 3. Get Current User
+GET {{baseUrl}}/api/auth/me
+Authorization: Bearer {{authToken}}
+
+### 4. Logout User
+POST {{baseUrl}}/api/auth/logout
+Authorization: Bearer {{authToken}}
