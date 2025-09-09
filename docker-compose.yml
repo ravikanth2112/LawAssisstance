@@ -6,9 +6,9 @@ services:
       context: ./apps/api
     volumes:
       - ./apps/api:/app
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload
     ports:
-      - "8000:8000"
+      - "9000:8080"
     env_file:
       - .env
     depends_on:
@@ -23,7 +23,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:8000
+      - NEXT_PUBLIC_API_URL=http://localhost:9000
     depends_on:
       - api
 
@@ -45,3 +45,5 @@ services:
 
 volumes:
   postgres_data:
+
+

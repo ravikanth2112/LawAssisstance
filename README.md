@@ -2,8 +2,8 @@
 
 This repository uses a monorepo layout:
 
-- Frontend: Next.js (TypeScript)  `apps/web`
-- Backend: FastAPI (Python)  `apps/api`
+- Frontend: Next.js (TypeScript) — `apps/web`
+- Backend: FastAPI (Python) — `apps/api`
 - Database: PostgreSQL
 - Redis: Redis (for future background jobs)
 
@@ -20,8 +20,8 @@ docker-compose up --build
 ```
 
 Services:
-- API: http://localhost:8000
-- API docs (Swagger): http://localhost:8000/docs
+- API: http://localhost:9000
+- API docs (Swagger): http://localhost:9000/docs
 - Web: http://localhost:3000 (if `apps/web` provides a dev server or Dockerfile)
 
 ## Run backend locally (dev)
@@ -34,10 +34,10 @@ python -m venv .venv
 .venv\\Scripts\\Activate.ps1     # PowerShell on Windows
 pip install -U pip
 pip install fastapi uvicorn[standard] sqlalchemy pydantic psycopg2-binary
-uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+uvicorn app.main:app --reload --host 127.0.0.1 --port 8080
 ```
 
-Open API docs at http://127.0.0.1:8000/docs
+Open API docs at http://127.0.0.1:9000/docs
 
 ## Run frontend locally (dev)
 
@@ -58,3 +58,5 @@ Legacy Node/Express server files (if present) should be removed. See the command
 
 - `apps/api` includes a minimal, runnable scaffold. Expand `app/models`, `app/services` and add Alembic migrations as needed.
 - Update `.env` with strong `SECRET_KEY` and production DB credentials for production deployments.
+
+
